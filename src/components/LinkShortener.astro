@@ -1,0 +1,85 @@
+<div class="wrapper shadow">
+  <input
+    input-link
+    type="text"
+    class="text-sm lg:text-base p-2 mb-3 w-full border border-[rgb(var(--accent))] rounded"
+    placeholder="Long Link"
+  />
+  <button
+    data-confetti-button
+    class="w-full p-2 lg:p-3 text-white lg:text-xl font-bold button rounded-md opacity-90 hover:opacity-100 hover:shadow-xl disabled:bg-gray-300 disabled:hover:shadow-none disabled:hover:opacity-90"
+    >Generate</button
+  >
+  <h2
+    class="w-full mt-5 text-[rgb(var(--accent))] text-xl pt-2 border-t-4 border-gray-100"
+  >
+    <a
+      result-link-shortered
+      target="_blank"
+      class="underline italic text-sm lg:text-xl"></a>
+  </h2>
+</div>
+<style>
+  .wrapper {
+    line-height: 1.6;
+    margin: 1rem 0;
+    border: 1px solid rgba(var(--accent), 25%);
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.4rem;
+  }
+  .button {
+    background-position: 0;
+    background-image: var(--accent-gradient);
+  }
+  .button:disabled {
+    background-image: none;
+  }
+</style>
+
+<script>
+  const input: any = document.querySelector("[input-link]");
+  const result = document.querySelector("[result-link-shortered]");
+  const button: any = document.querySelector("[data-confetti-button]");
+  let link = "";
+
+  const baseUrl = import.meta.env.PUBLIC_API_BASE_URL;
+  const accessToken = import.meta.env.PUBLIC_ACCESS_TOKEN;
+  const handleShortenClick = async () => {
+    button.textContent = "Loading...";
+    try {
+      const response = await fetch(`${baseUrl}/v4/shorten`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          // group_guid: "", // Optional
+          domain: "bit.ly",
+          long_url: link,
+        }),
+      });
+      const responseData: any = await response.json();
+      console.log("response data", responseData);
+      result.textContent = responseData?.link;
+      result.setAttribute("href", responseData?.link);
+
+      button.textContent = "Generate";
+    } catch (error) {
+      console.error("Failed to shorten link:", error);
+      result.textContent = "";
+      button.textContent = "Generate";
+    }
+  };
+
+  input.addEventListener("change", (e: any) => {
+    e.preventDefault();
+    const value = e.target.value;
+    link = value;
+  });
+
+  button.addEventListener("click", () => handleShortenClick());
+</script>
