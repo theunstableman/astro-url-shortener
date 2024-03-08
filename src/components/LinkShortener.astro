@@ -44,28 +44,21 @@
   let link = "";
 
   const baseUrl = import.meta.env.PUBLIC_API_BASE_URL;
-  const accessToken = import.meta.env.PUBLIC_ACCESS_TOKEN;
   const handleShortenClick = async () => {
     button.textContent = "Loading...";
     try {
-      const response = await fetch(`${baseUrl}/v4/shorten`, {
+      const response = await fetch(`${baseUrl}/shorten/${link}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: "application/octet-stream",
+          "Content-Type": "application/octet-stream",
           "Access-Control-Allow-Origin": "*",
         },
-        method: "POST",
-        body: JSON.stringify({
-          // group_guid: "", // Optional
-          domain: "bit.ly",
-          long_url: link,
-        }),
+        method: "GET",
       });
-      const responseData: any = await response.json();
+      const responseData: any = await response.data();
       console.log("response data", responseData);
-      result.textContent = responseData?.link;
-      result.setAttribute("href", responseData?.link);
+      result.textContent = responseData;
+      result.setAttribute("href", responseData);
 
       button.textContent = "Generate";
     } catch (error) {
