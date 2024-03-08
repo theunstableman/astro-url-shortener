@@ -55,7 +55,7 @@
         },
         method: "GET",
       });
-      const responseData: any = await response.data();
+      const responseData: any = await response.text();
       console.log("response data", responseData);
       result.textContent = responseData;
       result.setAttribute("href", responseData);
